@@ -60,7 +60,7 @@ class MessagesResource(Resource):
         if filter_by == 'sent':
             msgs = Messages.query.filter_by(sent_by=get_current_user())
         else:
-            msgs = Messages.query.filter_by(sent_to=get_current_user())
+            msgs = Messages.query.filter_by(share_to=get_current_user().email)
         return paginate(msgs, schema)
 
     def post(self):
