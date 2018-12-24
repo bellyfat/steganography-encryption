@@ -20,6 +20,10 @@ class Development:
     # Suppress SQLALCHEMY_TRACK_MODIFICATIONS overhead warning
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    TMP_UPLOAD_PATH = '/tmp'
+
+    ENC_IMG_SAVE_PATH = 'images'
+
 
 class Production(Development):
     DEBUG = False
@@ -29,6 +33,8 @@ class Production(Development):
         'postgresql://localhost/stegano'
     )
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(7)
+
+    ENC_IMG_SAVE_PATH = 'images'
 
 
 class Testing(Development):
@@ -42,6 +48,8 @@ class Testing(Development):
 
     # Suppress SQLALCHEMY_TRACK_MODIFICATIONS overhead warning
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    ENC_IMG_SAVE_PATH = 'images'
 
 
 configuration = {
