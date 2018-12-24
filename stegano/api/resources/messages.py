@@ -41,7 +41,11 @@ class MessageResource(Resource):
             cph_txt = steg.decode()
             decr_key = get_aes_key(decr_key)
             txt = decrypt(decr_key, cph_txt)
-            return jsonify(msg=txt.decode())
+            try:
+                txt = txt.decode()
+            except UnicodeDecodeError:
+                txt = ''
+            return jsonify(msg=txt)
         return schema.jsonify(msg)
 
 
