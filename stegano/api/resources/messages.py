@@ -61,7 +61,11 @@ class MessagesResource(Resource):
 
     def get(self):
         schema = MessageSchema(many=True)
-
+        filter_by = request.args.get('msg_type', 'inbox')
+        if filter_by == 'sent':
+            msgs = Messages.query.filter_by(sent_by=get_current_user())
+        else:
+            msgs = Messages.query.filter_by(sent_to=get_current_user())
         return paginate(msgs, schema)
 
     def post(self):
