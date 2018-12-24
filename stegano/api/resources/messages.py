@@ -8,13 +8,14 @@ from stegano.schemas import MessageSchema
 from stegano.extensions import db
 from stegano.helpers.paginator import paginate
 from stegano.helpers.steg import SteganoImage
-from stegano.helpers import loadconf, get_save_location
+from stegano.helpers import loadconf, get_save_location, get_aes_key
 from Crypto.Cipher import AES
-
+from Crypto.Util import Counter
+from uuid import uuid4
 import os
 
 conf = loadconf()
-
+ctr = Counter.new(128)
 ALLOWED_EXTENSIONS = set(['png', 'bmp'])
 
 
@@ -80,9 +81,10 @@ class MessagesResource(Resource):
             filename = secure_filename(file.filename)
 
             imgpath = os.path.join(conf.TMP_UPLOAD_PATH, filename)
+            # Save user upload img to a tmp folder
             file.save(imgpath)
-
-            save_filename = f'enc_{filename}'
+            uid = uuid4().hex
+            save_filename = f'{uid}_{filename}'
             save_path = get_save_location(save_filename)
 
         else:
@@ -90,22 +92,20 @@ class MessagesResource(Resource):
                 jsonify(msg='File not allowed'), 400)
 
         schema = MessageSchema()
-        payload, errors = schema.load(request.data)
+        payload, errors = schema.load(request.form)
         if errors:
             return errors, 422
 
-        # Save user upload img to a tmp folder
-
         # Get an AES object corresponding to user input key
+        key = get_aes_key(payload['msg_enc_key'])
         aes = AES.new(
-            payload.msg_enc_key,
-            AES.MODE_CFB,
-            conf.SECRET_KEY
+            key,
+            AES.MODE_CTR,
+            counter=ctr
         )
-        cph_txt = aes.encrypt(payload.msg_payload)
+        cph_txt = aes.encrypt(payload['msg_payload'])
 
         # Hide the cipher text into user uploaded image
-        steg = SteganoImage(imgpath, msg=cph_txt)
+        steg = SteganoImage(imgpath, msg=str(cph_txt))
         steg.encode(save_path)
-
-        return schema.jsonify(msg)
+        return jsonify(msg='Message sent!')
