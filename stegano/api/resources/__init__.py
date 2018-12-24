@@ -1,4 +1,4 @@
-from .user import (
-    UserResource,
-    UsersResource
+from .messages import (
+    MessageResource,
+    MessagesResource
 )
