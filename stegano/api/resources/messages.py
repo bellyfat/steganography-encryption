@@ -19,7 +19,6 @@ class MessageResource(Resource):
             return make_response(
                 jsonify(msg='Missing JSON in request'), 400)
 
-        msg = Messages.objects.get_or_404(id=mid)
         return schema.jsonify(msg)
 
     def put(self, mid):
@@ -29,17 +28,13 @@ class MessageResource(Resource):
             return make_response(
                 jsonify(msg='Missing JSON in request'), 400)
 
-        msg = Messages.objects.get_or_404(id=mid)
-
         msg, errors = schema.load(request.json)
         if errors:
             return errors, 422
 
-        msg.save()
         return schema.jsonify(msg)
 
     def delete(self, mid):
-        msg = Messages.objects.get_or_404(id=mid)
 
         return jsonify(msg='User deleted')
 
@@ -51,8 +46,6 @@ class MessagesResource(Resource):
     def get(self):
         schema = MessageSchema(many=True)
 
-        msgs = Messages.objects()
-
         return paginate(msgs, schema)
 
     def post(self):
@@ -61,7 +54,5 @@ class MessagesResource(Resource):
         msg, errors = schema.load(request.json)
         if errors:
             return errors, 422
-
-        msg.save()
 
         return schema.jsonify(msg)
