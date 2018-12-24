@@ -9,9 +9,9 @@ from stegano.extensions import db
 from stegano.helpers.paginator import paginate
 from stegano.helpers.steg import SteganoImage
 from stegano.helpers.aes import encrypt, decrypt
+from stegano.helpers.mailers import send_signup_mail
 from stegano.helpers import loadconf, get_save_location, get_aes_key
-# from Crypto.Cipher import AES
-# from Crypto.Util import Counter
+from stegano.log import logger
 from uuid import uuid4
 import os
 
@@ -43,7 +43,8 @@ class MessageResource(Resource):
             txt = decrypt(decr_key, cph_txt)
             try:
                 txt = txt.decode()
-            except UnicodeDecodeError:
+            except UnicodeDecodeError as err:
+                logger.error(err)
                 txt = ''
             return jsonify(msg=txt)
         return schema.jsonify(msg)
@@ -101,20 +102,21 @@ class MessagesResource(Resource):
         steg = SteganoImage(imgpath, msg=cph_txt.decode())
         steg.encode(save_path)
 
+        curruser = get_current_user()
         # Record this as an entry in table
         model = Messages(
             share_to=payload['share_to'],
             img_file=save_filename,
-            sent_by=get_current_user()
+            sent_by=curruser
         )
 
         sent_to = Users.query.filter_by(email=payload['share_to']).first()
         if sent_to:
             model.sent_to = sent_to
         else:
+            logger.debug('User not found, sending signup invite!')
             # If the recepient is not signed up, send a mail
-            print('User not found')
-            pass
+            send_signup_mail(curruser.username, payload['share_to'])
 
         db.session.add(model)
         db.session.commit()
