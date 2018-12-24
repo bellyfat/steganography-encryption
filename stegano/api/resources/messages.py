@@ -108,4 +108,12 @@ class MessagesResource(Resource):
         # Hide the cipher text into user uploaded image
         steg = SteganoImage(imgpath, msg=str(cph_txt))
         steg.encode(save_path)
-        return jsonify(msg='Message sent!')
+
+        # Record this as an entry in table
+        model = Messages(
+            share_to=payload['share_to'],
+            img_file=save_filename
+        )
+        db.session.add(model)
+        db.session.commit()
+        return schema.jsonify(model)
