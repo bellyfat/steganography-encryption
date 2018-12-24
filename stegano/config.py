@@ -28,6 +28,15 @@ class Development:
             os.path.abspath(__file__)
         )
     )
+    HOST_DOMAIN = 'http://localhost:8000'
+
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False
+    MAIL_DEFAULT_SENDER = MAIL_USERNAME
 
 
 class Production(Development):
@@ -40,6 +49,7 @@ class Production(Development):
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(7)
 
     ENC_IMG_SAVE_PATH = 'images'
+    HOST_DOMAIN = 'https://stegano.sreenadh.me'
 
 
 class Testing(Development):
