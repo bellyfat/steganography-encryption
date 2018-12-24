@@ -8,7 +8,7 @@ import axios from 'axios'
 import './plugins/element.js'
 import 'element-ui/lib/theme-chalk/display.css'
 
-let API_ENDPOINT = process.env.VUE_APP_API_ENDPOINT
+let API_ENDPOINT = process.env.VUE_APP_API
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.baseURL = API_ENDPOINT
 Vue.use(VueAxios, axios)

@@ -37,18 +37,6 @@
                       placeholder="Password"
                       prefix-icon="fa fa-lock"/>
                   </el-form-item>
-                  <el-form-item label="Gender">
-                    <el-radio-group
-                      required
-                      v-model="signupFormData.gender">
-                      <el-radio
-                        label="m"/>
-                      <el-radio
-                        label="f"/>
-                      <el-radio
-                        label="o"/>
-                    </el-radio-group>
-                  </el-form-item>
                   <el-form-item v-if="signupFormData.reqErr">
                     <el-alert
                       title="Signup Error"
@@ -66,7 +54,6 @@
                     <el-button
                       type="info"
                       native-type="reset"
-                      @click="$refs.signupForm.reset();"
                       size="medium">Cancel</el-button>
                   </el-form-item>
                   <el-form-item>
