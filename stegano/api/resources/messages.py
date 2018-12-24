@@ -58,9 +58,15 @@ class MessagesResource(Resource):
         schema = MessageSchema(many=True)
         filter_by = request.args.get('msg_type', 'inbox')
         if filter_by == 'sent':
-            msgs = Messages.query.filter_by(sent_by=get_current_user())
+            msgs = Messages.query.filter_by(
+                sent_by=get_current_user()
+            )
         else:
-            msgs = Messages.query.filter_by(share_to=get_current_user().email)
+            # In other words, we can also add in user foreign key
+            # details on signup as a background thread
+            msgs = Messages.query.filter_by(
+                share_to=get_current_user().email
+            )
         return paginate(msgs, schema)
 
     def post(self):
@@ -117,7 +123,6 @@ class MessagesResource(Resource):
             logger.debug('User not found, sending signup invite!')
             # If the recepient is not signed up, send a mail
             send_signup_mail(curruser.username, payload['share_to'])
-
         db.session.add(model)
         db.session.commit()
         return schema.jsonify(model)
