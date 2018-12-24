@@ -23,6 +23,11 @@ class Development:
     TMP_UPLOAD_PATH = '/tmp'
 
     ENC_IMG_SAVE_PATH = 'images'
+    APP_ROOT = os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__)
+        )
+    )
 
 
 class Production(Development):
