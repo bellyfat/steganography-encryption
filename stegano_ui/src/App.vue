@@ -61,4 +61,7 @@ export default {
 .text-lg {
   font-size: 16px;
 }
+.text-xl {
+  font-size: 18px;
+}
 </style>
