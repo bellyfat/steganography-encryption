@@ -8,14 +8,14 @@ from stegano.schemas import MessageSchema
 from stegano.extensions import db
 from stegano.helpers.paginator import paginate
 from stegano.helpers.steg import SteganoImage
+from stegano.helpers.aes import encrypt, decrypt
 from stegano.helpers import loadconf, get_save_location, get_aes_key
-from Crypto.Cipher import AES
-from Crypto.Util import Counter
+# from Crypto.Cipher import AES
+# from Crypto.Util import Counter
 from uuid import uuid4
 import os
 
 conf = loadconf()
-ctr = Counter.new(128)
 ALLOWED_EXTENSIONS = set(['png', 'bmp'])
 
 
@@ -30,29 +30,19 @@ class MessageResource(Resource):
 
     def get(self, mid):
         schema = MessageSchema()
-
-        if not request.is_json:
-            return make_response(
-                jsonify(msg='Missing JSON in request'), 400)
-
+        msg = Messages.query.get_or_404(mid)
+        txt = ''
+        decr_key = request.args.get('decr_key')
+        if decr_key:
+            # decode message for the user from corresponding image
+            msg_img = get_save_location(msg.img_file)
+            # Unhide the cipher text
+            steg = SteganoImage(msg_img)
+            cph_txt = steg.decode()
+            decr_key = get_aes_key(decr_key)
+            txt = decrypt(decr_key, cph_txt)
+            return jsonify(msg=txt.decode())
         return schema.jsonify(msg)
-
-    def put(self, mid):
-        schema = MessageSchema(partial=True)
-
-        if not request.is_json:
-            return make_response(
-                jsonify(msg='Missing JSON in request'), 400)
-
-        msg, errors = schema.load(request.json)
-        if errors:
-            return errors, 422
-
-        return schema.jsonify(msg)
-
-    def delete(self, mid):
-
-        return jsonify(msg='User deleted')
 
 
 class MessagesResource(Resource):
@@ -101,15 +91,10 @@ class MessagesResource(Resource):
 
         # Get an AES object corresponding to user input key
         key = get_aes_key(payload['msg_enc_key'])
-        aes = AES.new(
-            key,
-            AES.MODE_CTR,
-            counter=ctr
-        )
-        cph_txt = aes.encrypt(payload['msg_payload'])
+        cph_txt = encrypt(key, payload['msg_payload'])
 
         # Hide the cipher text into user uploaded image
-        steg = SteganoImage(imgpath, msg=str(cph_txt))
+        steg = SteganoImage(imgpath, msg=cph_txt.decode())
         steg.encode(save_path)
 
         # Record this as an entry in table
