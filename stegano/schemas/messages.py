@@ -6,6 +6,7 @@ from marshmallow import (
 
 from stegano.extensions import ma
 from stegano.models import Messages
+from .user import UserSchema
 
 
 class MessageSchema(ma.Schema):
@@ -19,6 +20,8 @@ class MessageSchema(ma.Schema):
     )
     img_file = ma.String(dump_only=True)
     sent_on = ma.DateTime(dump_only=True)
+    sent_by = ma.Nested(UserSchema, dump_only=True)
+    sent_to = ma.Nested(UserSchema, dump_only=True)
 
     # @post_load
     # def make_user(self, data):

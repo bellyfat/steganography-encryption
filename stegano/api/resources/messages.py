@@ -1,9 +1,9 @@
 from flask import request, make_response, jsonify
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_current_user
 from werkzeug.utils import secure_filename
 
-from stegano.models import Messages
+from stegano.models import Messages, Users
 from stegano.schemas import MessageSchema
 from stegano.extensions import db
 from stegano.helpers.paginator import paginate
@@ -86,7 +86,6 @@ class MessagesResource(Resource):
             uid = uuid4().hex
             save_filename = f'{uid}_{filename}'
             save_path = get_save_location(save_filename)
-
         else:
             return make_response(
                 jsonify(msg='File not allowed'), 400)
@@ -112,8 +111,18 @@ class MessagesResource(Resource):
         # Record this as an entry in table
         model = Messages(
             share_to=payload['share_to'],
-            img_file=save_filename
+            img_file=save_filename,
+            sent_by=get_current_user()
         )
+
+        sent_to = Users.query.filter_by(email=payload['share_to']).first()
+        if sent_to:
+            model.sent_to = sent_to
+        else:
+            # If the recepient is not signed up, send a mail
+            print('User not found')
+            pass
+
         db.session.add(model)
         db.session.commit()
         return schema.jsonify(model)
