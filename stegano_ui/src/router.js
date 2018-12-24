@@ -3,6 +3,9 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import Signup from './views/Signup.vue'
+import NewMessage from './views/NewMessage.vue'
+import Inbox from './views/Inbox.vue'
+import Outbox from './views/Outbox.vue'
 
 Vue.use(Router)
 
@@ -22,6 +25,18 @@ var router = new Router({
       name: 'signup',
       component: Signup,
       meta: { public: true }
+    }, {
+      path: '/new',
+      name: 'new',
+      component: NewMessage
+    }, {
+      path: '/inbox',
+      name: 'inbox',
+      component: Inbox
+    }, {
+      path: '/outbox',
+      name: 'outbox',
+      component: Outbox
     },
     {
       path: '/about',
