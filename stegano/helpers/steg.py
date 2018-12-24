@@ -21,7 +21,7 @@ class SteganoImage(object):
         length = len(self.msg_to_hide)
         for row in range(height):
             for col in range(width):
-                r, g, b = img.getpixel((col, row))
+                r, g, b = img_to_encode.getpixel((col, row))
                 # first value is length of msg
                 if row == 0 and col == 0 and index < length:
                     asc = length
@@ -33,3 +33,23 @@ class SteganoImage(object):
                 encoded.putpixel((col, row), (asc, g, b))
                 index += 1
         encoded.save(save_path)
+
+    def decode(self):
+        img_to_decode = Image.open(self.img_path)
+        width, height = img_to_decode.size
+        decoded_msg = ""
+        index = 0
+        for row in range(height):
+            for col in range(width):
+                try:
+                    r, g, b = img_to_decode.getpixel((col, row))
+                except ValueError:
+                    # need to add transparency a for some .png files
+                    r, g, b, a = img_to_decode.getpixel((col, row))
+                # first pixel r value is length of message
+                if row == 0 and col == 0:
+                    length = r
+                elif index <= length:
+                    decoded_msg += chr(r)
+                index += 1
+        return decoded_msg
