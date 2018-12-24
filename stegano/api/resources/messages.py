@@ -6,6 +6,10 @@ from stegano.models import Messages
 from stegano.schemas import MessageSchema
 from stegano.extensions import db
 from stegano.helpers.paginator import paginate
+from stegano.helpers.steg import SteganoImage
+from stegano.helpers import loadconf
+from Crypto.Cipher import AES
+conf = loadconf()
 
 
 class MessageResource(Resource):
@@ -51,8 +55,18 @@ class MessagesResource(Resource):
     def post(self):
         schema = MessageSchema()
 
-        msg, errors = schema.load(request.json)
+        payload, errors = schema.load(request.data)
         if errors:
             return errors, 422
+
+        # Get an AES object corresponding to user input key
+        aes = AES.new(
+            payload.msg_enc_key,
+            AES.MODE_CFB,
+            conf.SECRET_KEY
+        )
+        cph_txt = aes.encrypt(payload.msg_payload)
+
+        # Hide the cipher text into user uploaded image
 
         return schema.jsonify(msg)
