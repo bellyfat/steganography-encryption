@@ -37,6 +37,9 @@
                   <el-form-item label="Recepient Mail">
                     <el-input required v-model="messageForm.share_to" type="email" placeholder="Enter the recepient email address"></el-input>
                   </el-form-item>
+                  <el-form-item v-if="messageForm.reqErr">
+                    <el-alert title="Failed to send message" type="error" :description="messageForm.reqErr" :closable="true"/>
+                  </el-form-item>
                   <el-form-item>
                     <el-button type="success" native-type="submit" size="medium">Send</el-button>
                   </el-form-item>
@@ -61,6 +64,7 @@ export default {
         msg_payload: '',
         msg_enc_key: '',
         share_to: '',
+        reqErr: '',
         img_file: ''
       }
     }
@@ -81,7 +85,16 @@ export default {
         data.append('msg_payload', this.messageForm.msg_payload)
         data.append('msg_enc_key', this.messageForm.msg_enc_key)
         data.append('share_to', this.messageForm.share_to)
-        this.$http.post(url, data, { headers: { 'Content-Type': 'multipart/form-data' } }).then((response) => {}, (err) => {})
+        this.messageForm.reqErr = ''
+        this.$http.post(url, data, { headers: { 'Content-Type': 'multipart/form-data' } }).then((response) => {
+          this.$notify({
+            title: 'Message Sent',
+            message: 'Your secret message has been sent successfully',
+            type: 'success'
+          })
+        }, (err) => {
+          this.messageForm.reqErr = err.response.status + ' : ' + err.response.data.msg
+        })
       }
     }
   }

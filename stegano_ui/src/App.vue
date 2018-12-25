@@ -64,4 +64,13 @@ export default {
 .text-xl {
   font-size: 18px;
 }
+.scrollmenu{
+  overflow-y: scroll;
+}
+@media (min-width: 768px){
+  .scrollmenu{
+    height: calc(95vh - 200px)
+  }
+}
+
 </style>
