@@ -71,7 +71,6 @@ class MessagesResource(Resource):
 
     def post(self):
         # Validate file in req
-        print(request.data, request.files, request.form)
         if 'file' not in request.files:
             return make_response(
                 jsonify(msg='An image file is required'),
@@ -107,7 +106,12 @@ class MessagesResource(Resource):
 
         # Hide the cipher text into user uploaded image
         steg = SteganoImage(imgpath, msg=cph_txt.decode())
-        steg.encode(save_path)
+        try:
+            steg.encode(save_path)
+        except TypeError as err:
+            return make_response(
+                jsonify(msg=str(err)), 422
+            )
 
         curruser = get_current_user()
         # Record this as an entry in table
