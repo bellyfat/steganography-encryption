@@ -48,8 +48,8 @@ export default {
       var perPage = this.pagination.perPage
       var url = '/api/v1/messages?msg_type=sent&page=' + page + '&perPage=' + perPage
       this.$http.get(url).then(
-        (reponse) => {
-          this.outboxMsgs = reponse.data.results
+        (response) => {
+          this.outboxMsgs = response.data.results
           this.pagination.total = response.data.total
           this.pagination.totalPages = response.data.total_pages
         },

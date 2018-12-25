@@ -49,7 +49,7 @@ class Production(Development):
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(7)
 
     ENC_IMG_SAVE_PATH = 'images'
-    HOST_DOMAIN = 'https://stegano.sreenadh.me'
+    HOST_DOMAIN = 'https://stegano.sreenadh.me/'
 
 
 class Testing(Development):

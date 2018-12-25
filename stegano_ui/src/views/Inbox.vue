@@ -66,8 +66,8 @@ export default {
       var perPage = this.pagination.perPage
       var url = '/api/v1/messages?page=' + page + '&perPage=' + perPage
       this.$http.get(url).then(
-        (reponse) => {
-          this.inboxMsgs = reponse.data.results
+        (response) => {
+          this.inboxMsgs = response.data.results
           this.pagination.total = response.data.total
           this.pagination.totalPages = response.data.total_pages
         },
@@ -78,8 +78,8 @@ export default {
           }
         })
     },
-    getImgSrc (img_file) {
-      return process.env.VUE_APP_API + 'assets/images/' + img_file
+    getImgSrc (imgFile) {
+      return process.env.VUE_APP_API + 'assets/images/' + imgFile
     },
     openDecrKeyBox () {
       this.$prompt('Please input your encryption key', 'Key needed!', {
@@ -104,7 +104,9 @@ export default {
             callback: action => {}
           })
         },
-        (err) => {})
+        (err) => {
+          console.log(err)
+        })
     }
   },
   created () {
