@@ -4,8 +4,8 @@
   v-if="!$route.meta.public">
   <!-- Main pages -->
   <el-container>
-    <el-aside>
-      <el-menu router default-active="2" class="el-menu-vertical-demo" background-color="#fff" text-color="#0f0f0f" active-text-color="#b35465">
+    <el-aside style="border-right:solid 1px #e6e6e6;height: 100vh">
+      <el-menu style="border-right:none" router default-active="2" class="el-menu-vertical-demo" background-color="#fff" text-color="#0f0f0f" active-text-color="#b35465">
         <el-menu-item index="new">
           <span>Stegano</span>
         </el-menu-item>
@@ -39,13 +39,9 @@ style="height='100%'">
 </template>
 
 <script>
-import Login from './views/Login.vue'
 
 export default {
-  name: 'App',
-  components: {
-    Login
-  }
+  name: 'App'
 }
 </script>
 <style>
