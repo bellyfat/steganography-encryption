@@ -24,8 +24,9 @@
               </el-card>
             </div>
           </el-col>
-          <el-col :span="18" v-if="inboxMsgs.length && openedMsg">
-            <el-card>
+          <el-col :span="10" v-if="inboxMsgs.length && openedMsg">
+            <el-card :body-style="{ padding: '0px', width:'inherit'}">
+
               <div slot="header" class="clearfix">
                 <span class="text-xs"><i>Click on the image to unhide the secret message</i></span>
                 <p class="text-xs" style="color: grey"><i>{{openedMsg.sent_on | humanizeTime}} ( {{openedMsg.sent_on | calendarTime}} )</i></p>
@@ -33,9 +34,7 @@
                   <i>By {{ openedMsg.sent_by.username | capitalize}}</i>(<a :href="'mailto:'+openedMsg.sent_by.email">{{openedMsg.sent_by.email}}</a>)
                 </p>
               </div>
-              <div>
-                <pre>{{openedMsg}}</pre>
-              </div>
+              <img :src="getImgSrc(openedMsg.img_file)" class="card-img-top" @click="openDecrKeyBox">
             </el-card>
           </el-col>
         </el-row>
@@ -59,6 +58,34 @@ export default {
       this.$http.get(url).then(
         (reponse) => {
           this.inboxMsgs = reponse.data.results
+        },
+        (err) => {})
+    },
+    getImgSrc (img_file) {
+      return process.env.VUE_APP_API + 'assets/images/' + img_file
+    },
+    openDecrKeyBox () {
+      this.$prompt('Please input your encryption key', 'Key needed!', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel'
+      }).then(({ value }) => {
+        this.unhideMessage(this.openedMsg.id, value)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Decryption canceled'
+        })
+      })
+    },
+    unhideMessage (mid, key) {
+      var url = '/api/v1/messages/' + mid + '?decr_key=' + key
+      this.$http.get(url).then(
+        (reponse) => {
+          this.openedMsg.hiddenmsg = reponse.data.msg
+          this.$alert(reponse.data.msg, 'Your secret message', {
+            confirmButtonText: 'OK',
+            callback: action => {}
+          })
         },
         (err) => {})
     }

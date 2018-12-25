@@ -67,6 +67,12 @@ export default {
 .scrollmenu{
   overflow-y: scroll;
 }
+.card-img-top {
+  width: 100%;
+  height: 20vw;
+  object-fit: cover;
+  cursor: pointer;
+}
 @media (min-width: 768px){
   .scrollmenu{
     height: calc(95vh - 200px)
