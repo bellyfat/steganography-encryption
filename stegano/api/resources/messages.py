@@ -67,6 +67,8 @@ class MessagesResource(Resource):
             msgs = Messages.query.filter_by(
                 share_to=get_current_user().email
             )
+        # Order the message with latest at first
+        msgs = msgs.order_by(Messages.sent_on.desc())
         return paginate(msgs, schema)
 
     def post(self):
@@ -105,10 +107,10 @@ class MessagesResource(Resource):
         cph_txt = encrypt(key, payload['msg_payload'])
 
         # Hide the cipher text into user uploaded image
-        steg = SteganoImage(imgpath, msg=cph_txt.decode())
         try:
+            steg = SteganoImage(imgpath, msg=cph_txt.decode())
             steg.encode(save_path)
-        except TypeError as err:
+        except (TypeError, ValueError) as err:
             return make_response(
                 jsonify(msg=str(err)), 422
             )

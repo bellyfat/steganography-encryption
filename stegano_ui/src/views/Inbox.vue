@@ -10,6 +10,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="10">
+          <!-- Left side -->
           <el-col :span="6">
             <div class="scrollmenu">
               <el-card v-for="msg in inboxMsgs" :key="msg.id" shadow="hover" style="margin-bottom: 5px">
@@ -23,7 +24,13 @@
                 </div>
               </el-card>
             </div>
+            <br>
+            <div id="inbox-pagination" v-if="pagination.totalPages > 1">
+              <el-pagination @size-change="fetchInbox" @current-change="fetchInbox" :current-page.sync="pagination.page" :page-sizes="[15,50,100]" :page-size.sync="pagination.perPage" layout="total, sizes, prev, pager, next, jumper" background :total="pagination.totaPages"/>
+            </div>
           </el-col>
+
+          <!-- Right side -->
           <el-col :span="10" v-if="inboxMsgs.length && openedMsg">
             <el-card :body-style="{ padding: '0px', width:'inherit'}">
 
@@ -49,17 +56,27 @@ export default {
   data () {
     return {
       inboxMsgs: [],
-      openedMsg: null
+      openedMsg: null,
+      pagination: { page: 1, total: 0, totalPages: 0, perPage: 15 }
     }
   },
   methods: {
     fetchInbox () {
-      var url = '/api/v1/messages'
+      var page = this.pagination.page
+      var perPage = this.pagination.perPage
+      var url = '/api/v1/messages?page=' + page + '&perPage=' + perPage
       this.$http.get(url).then(
         (reponse) => {
           this.inboxMsgs = reponse.data.results
+          this.pagination.total = response.data.total
+          this.pagination.totalPages = response.data.total_pages
         },
-        (err) => {})
+        (err) => {
+          if (err.response.status === 404) {
+            this.inboxMsgs = []
+            this.pagination = { page: 1, total: 0, totalPages: 0, perPage: 15 }
+          }
+        })
     },
     getImgSrc (img_file) {
       return process.env.VUE_APP_API + 'assets/images/' + img_file
