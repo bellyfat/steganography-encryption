@@ -8,7 +8,7 @@
 # stegano/helpers/paginator.py: 3
 flask == 1.0.2
 
-
+pillow == 5.3.0
 pycrypto == 2.6.1
 
 # stegano/api/resources/user.py: 3
