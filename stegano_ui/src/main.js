@@ -6,6 +6,7 @@ import VueAuthenticate from 'vue-authenticate'
 import axios from 'axios'
 
 import './plugins/element.js'
+import './plugins/filters.js'
 import 'element-ui/lib/theme-chalk/display.css'
 
 let API_ENDPOINT = process.env.VUE_APP_API
