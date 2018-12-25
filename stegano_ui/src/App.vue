@@ -5,7 +5,7 @@
   <!-- Main pages -->
   <el-container>
     <el-aside>
-      <el-menu router default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" background-color="#fff" text-color="#0f0f0f" active-text-color="#b35465">
+      <el-menu router default-active="2" class="el-menu-vertical-demo" background-color="#fff" text-color="#0f0f0f" active-text-color="#b35465">
         <el-menu-item index="new">
           <span>Stegano</span>
         </el-menu-item>

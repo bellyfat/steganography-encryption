@@ -71,6 +71,7 @@ class MessagesResource(Resource):
 
     def post(self):
         # Validate file in req
+        print(request.data, request.files, request.form)
         if 'file' not in request.files:
             return make_response(
                 jsonify(msg='An image file is required'),

@@ -15,11 +15,13 @@ def loadconf():
 
 def get_save_location(filename):
     conf = loadconf()
-    enc_save_path = os.path.join(
+    images_fldr = os.path.join(
         conf.APP_ROOT,
-        conf.ENC_IMG_SAVE_PATH,
-        filename
-    )
+        conf.ENC_IMG_SAVE_PATH)
+    if not os.path.isdir(images_fldr):
+        os.mkdir(images_fldr)
+    enc_save_path = os.path.join(
+        images_fldr, filename)
     return enc_save_path
 
 
